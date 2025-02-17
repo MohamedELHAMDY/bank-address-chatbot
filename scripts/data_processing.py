@@ -39,6 +39,10 @@ df_map = df[['REGION', 'LOCALITE', 'NOM_BANQUE', 'CATEGORIE', 'NOM GUICHET', 'AD
 
 # --- Geocoding ---
 def geocode_address(address, retries=3):
+    if address is None or not isinstance(address, str) or address.strip() == "":  # Check for None, non-string, or empty address
+        print("Geocoding failed: No address provided")  # Print failure message
+        return None, None
+
     geolocator = Nominatim(user_agent="mawqi_tamwil_app")
     for attempt in range(retries):
         try:
@@ -60,6 +64,9 @@ def geocode_address(address, retries=3):
                 print("Max retries reached. Giving up.")
                 return None, None
         time.sleep(1) # Wait for 1 second after each attempt
+
+print("DataFrame before geocoding:")
+print(df) # Print the dataframe before geocoding
 
 df_map['latitude'], df_map['longitude'] = zip(*df_map['ADRESSE GUICHET'].apply(geocode_address))
 
