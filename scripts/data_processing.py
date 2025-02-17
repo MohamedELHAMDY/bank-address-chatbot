@@ -8,7 +8,7 @@ def clean_address(address):
     address = address.replace(" ,", ",")
     address = address.replace("  ", " ")
     return address
-
+#My comment
 df['ADRESSE'] = df['ADRESSE'].apply(clean_address)
 
 df_map = df[['REGION', 'LOCALITE', 'NOM_BANQUE', 'CATEGORIE', 'NOM_AGENCE', 'ADRESSE']].copy()
