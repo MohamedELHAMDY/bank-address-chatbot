@@ -23,8 +23,8 @@ def clean_address(address):
         return address.strip().replace(" ,", ",").replace("  ", " ")
     return address
 
-# Set correct column names - THIS IS CRUCIAL
-df.columns = ['REGION', 'LOCALITE', 'NOM_BANQUE', 'CATEGORIE', 'CODE GUICHET', 'NOM GUICHET', 'ADRESSE GUICHET']
+# Set correct column names - THIS IS CRUCIAL, INCLUDING THE UNNAMED COLUMN
+df.columns = ['Unnamed: 0', 'REGION', 'LOCALITE', 'NOM_BANQUE', 'CATEGORIE', 'CODE GUICHET', 'NOM GUICHET', 'ADRESSE GUICHET']
 
 df['ADRESSE GUICHET'] = df['ADRESSE GUICHET'].apply(clean_address)  # Use the *intended* name
 
