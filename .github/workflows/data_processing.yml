@@ -1,44 +1,39 @@
+---
 name: Data Processing and Geocoding
-
 on:
   push:
-    branches: [main, master]
-
+    branches:
+      - main
+      - master
 jobs:
   process_data:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
-
+          python-version: "3.9"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install pandas openpyxl
-
-      - name: Debug: List files before processing
+      - name: Debug List files before processing
         run: |
           echo "Current Directory: $(pwd)"
           ls -l
           ls -l data/
           file data/detail-implantation-bancaire-2022.xlsx
-
       - name: Run data processing script
         working-directory: ./scripts
         run: python create_address_json.py
-
-      - name: Debug: Verify JSON output
+      - name: Debug Verify JSON output
         run: |
           ls -l data/
           cat data/addresses.json
-
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "Automated data processing and geocoding"
+          commit_message: Automated data processing and geocoding
           file_pattern: data/addresses.json
