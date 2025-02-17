@@ -30,8 +30,11 @@ try:
 
     df_map = df[['REGION', 'LOCALITE', 'NOM_BANQUE', 'CATEGORIE', 'NOM GUICHET', 'ADRESSE GUICHET']].copy()
 
-    def geocode_address(address, retries=3):
-        if address is None or not isinstance(address, str) or address.strip() == "":
+    def geocode_address(row, retries=3):
+        address = f"{row['ADRESSE GUICHET']}, {row['LOCALITE']}, {row['REGION']}"
+        print(f"Constructed address: {address}")
+
+        if not address or not isinstance(address, str) or address.strip() == "":
             print("Geocoding failed: No address provided")
             return None, None
 
@@ -44,23 +47,23 @@ try:
                     print(f"Geocoding successful: {location.latitude}, {location.longitude}")
                     return location.latitude, location.longitude
                 else:
-                    print(f"Geocoding failed for address: {address}")  # Print failed address
+                    print(f"Geocoding failed for address: {address}")
                     return None, None
             except (GeocoderTimedOut, GeocoderServiceError) as e:
-                print(f"Geocoding error for address {address}: {e}")  # Print error details
+                print(f"Geocoding error for address {address}: {e}")
                 if attempt < retries - 1:
                     print("Retrying...")
                     time.sleep(1)
                     continue
                 else:
-                    print("Max retries reached for address:", address)  # Indicate max retries
+                    print("Max retries reached for address:", address)
                     return None, None
             time.sleep(1)
 
     print("DataFrame before geocoding:")
     print(df)
 
-    df_map['latitude'], df_map['longitude'] = zip(*df_map['ADRESSE GUICHET'].apply(geocode_address))
+    df_map['latitude'], df_map['longitude'] = zip(*df_map.apply(geocode_address, axis=1))
 
     data_dir = "data"
     bank_locations_geocoded_file = os.path.join(data_dir, "bank_locations_geocoded.csv")
