@@ -13,5 +13,7 @@ pandas = "^2.2.3"
 openpyxl = "^3.1.5"
 requests = "^2.26.0"  # Example, add any additional dependencies
 
-[tool.poetry.dev-dependencies]
-pytest = "^6.2"  # Example, add dev dependencies if needed
+[tool.poetry.group.dev.dependencies]
+pytest = "^6.2.5"
+requests = "^2.32.3"
+
