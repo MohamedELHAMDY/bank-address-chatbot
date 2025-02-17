@@ -3,7 +3,7 @@ import pandas as pd
 import os
 from geopy.geocoders import Nominatim
 from geopy.exc import GeocoderTimedOut, GeocoderServiceError
-import time  # Import the time module
+import time
 
 excel_file = "data/detail-implantation-bancaire-2022.xlsx"
 
@@ -13,7 +13,7 @@ sheet = workbook.active
 
 # Extract data rows (starting from row 6)
 data_rows = []
-for row in sheet.iter_rows(min_row=6):  # Start from row 6
+for row in sheet.iter_rows(min_row=6):
     data_rows.append([cell.value for cell in row])
 
 # Extract header row (from row 5)
@@ -22,20 +22,20 @@ header_row = [cell.value for cell in sheet[5]]
 # Create DataFrame
 df = pd.DataFrame(data_rows, columns=header_row)
 
-# Limit rows for testing (remove in production)
-# df = df.head(10)  # Process only the first 10 rows for testing
-
+# Clean addresses (before setting column names to avoid potential KeyError)
 def clean_address(address):
     if isinstance(address, str):
-        return address.strip().replace(" ,", ",").replace("  ", " ")
-    return address
+        cleaned_address = address.strip().replace(" ,", ",").replace("  ", " ")
+        return cleaned_address
+    return address  # Return original value if not a string
+
+df['ADRESSE GUICHET'] = df['ADRESSE GUICHET'].apply(clean_address)
+
 
 # Set correct column names - THIS IS CRUCIAL
 df.columns = ['Unnamed: 0', 'REGION', 'LOCALITE', 'NOM_BANQUE', 'CATEGORIE', 'CODE GUICHET', 'NOM GUICHET', 'ADRESSE GUICHET']
 
-df['ADRESSE GUICHET'] = df['ADRESSE GUICHET'].apply(clean_address)  # Use the *intended* name
-
-df_map = df[['REGION', 'LOCALITE', 'NOM_BANQUE', 'CATEGORIE', 'NOM GUICHET', 'ADRESSE GUICHET']].copy()  # Use the *intended* name
+df_map = df[['REGION', 'LOCALITE', 'NOM_BANQUE', 'CATEGORIE', 'NOM GUICHET', 'ADRESSE GUICHET']].copy()
 
 # --- Geocoding ---
 def geocode_address(address, retries=3):
@@ -92,7 +92,7 @@ print("\nFirst 5 Rows of DataFrame:")
 print(df.head())
 
 print("\ndf_map Info:")
-df_map.info()
+print(df_map.info()
 print("\nFirst 5 Rows of df_map:")
 print(df_map.head())
 
