@@ -8,10 +8,10 @@ def clean_address(address):
     address = address.replace(" ,", ",")
     address = address.replace("  ", " ")
     return address
-#My comment
-df['ADRESSE'] = df['ADRESSE'].apply(clean_address)
 
-df_map = df[['REGION', 'LOCALITE', 'NOM_BANQUE', 'CATEGORIE', 'NOM_AGENCE', 'ADRESSE']].copy()
+df['Adresse'] = df['Adresse'].apply(clean_address)  # Corrected column name
+
+df_map = df[['REGION', 'LOCALITE', 'NOM_BANQUE', 'CATEGORIE', 'NOM_AGENCE', 'Adresse']].copy()  # Corrected here as well
 
 df_map.to_csv("data/bank_locations.csv", index=False, encoding='utf-8')
-print("Data saved to data/bank_locations.csv") 
+print("Data saved to data/bank_locations.csv")
