@@ -17,19 +17,18 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: Install dependencies  # Install googlemaps and geopy here
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pandas openpyxl googlemaps geopy  # Add geopy
+          pip install pandas openpyxl googlemaps
 
-      - name: Run data processing and geocoding script
-        run: python scripts/data_processing.py
+      - name: Run data processing script
+        run: |
+          ls -l scripts  # List files in the scripts directory (for debugging)
+          python scripts/data_processing.py
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "Automated data processing and geocoding"
-          file_pattern: data/bank_locations_geocoded.csv data/bank_locations.csv
-
-      - name: List files (for debugging)
-        run: ls -l data
+          file_pattern: data/addresses.json # Correct file pattern
