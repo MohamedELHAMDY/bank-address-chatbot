@@ -1,19 +1,15 @@
 [tool.poetry]
 name = "bank-address-chatbot"
 version = "0.1.0"
-description = "A chatbot to retrieve bank addresses"
-authors = ["Your Name <youremail@example.com>"]
-
-# Add this section to specify the package location
-packages = [{ include = "src" }]  # If your source code is inside the `src/` folder
+description = "..."
+authors = ["Your Name <your.email@example.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
 pandas = "^2.2.3"
-openpyxl = "^3.1.5"
-requests = "^2.26.0"  # Example, add any additional dependencies
-
-[tool.poetry.group.dev.dependencies]
-pytest = "^6.2.5"
 requests = "^2.32.3"
+pytest = "^6.2.5"
+openpyxl = "^3.1.5"
 
+[tool.poetry.scripts]
+bank-chatbot = "src.bank_address_chatbot.main:main"
