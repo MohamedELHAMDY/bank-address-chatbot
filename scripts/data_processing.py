@@ -80,6 +80,13 @@ try:
 
     df_map['latitude'], df_map['longitude'] = zip(*df_map.apply(geocode_address, axis=1))
 
+    # Merge postal codes into df_map
+    df_map = pd.merge(df_map, postal_codes_df[['REGION_POSTALE', 'LOCALITE', 'NOUVEAU CODE POSTAL']], 
+                  left_on=['REGION', 'LOCALITE'], right_on=['REGION_POSTALE', 'LOCALITE'], how='left')
+
+    # Select and reorder columns for the final output
+    df_map = df_map[['ADRESSE GUICHET', 'NOUVEAU CODE POSTAL', 'LOCALITE', 'REGION', 'latitude', 'longitude']]
+
     data_dir = "data"
     bank_locations_geocoded_file = os.path.join(data_dir, "bank_locations_geocoded.csv")
     bank_locations_file = os.path.join(data_dir, "bank_locations.csv")
@@ -93,13 +100,8 @@ try:
     print(f"Data saved to {bank_locations_file}")
 
     print("DataFrame Info:")
-    df.info()
-    print("\nFirst 5 Rows of DataFrame:")
-    print(df.head())
-
-    print("\ndf_map Info:")
     df_map.info()
-    print("\nFirst 5 Rows of df_map:")
+    print("\nFirst 5 Rows of DataFrame:")
     print(df_map.head())
 
     print("\nColumns in df_map:")
