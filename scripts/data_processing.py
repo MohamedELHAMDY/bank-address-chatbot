@@ -6,7 +6,6 @@ from geopy.exc import GeocoderTimedOut, GeocoderServiceError
 import time
 
 excel_file = "data/detail-implantation-bancaire-2022.xlsx"
-postal_codes_file = "data/codes-postaux-localites-2018.xlsx"
 
 try:
     # Load Excel data
@@ -30,25 +29,7 @@ try:
     # Select columns for geocoding
     df_map = df[['REGION', 'LOCALITE', 'NOM_BANQUE', 'CATEGORIE', 'NOM GUICHET', 'ADRESSE GUICHET']].copy()
 
-    # Load postal codes data
-    postal_codes_df = pd.read_excel(postal_codes_file)
-
-    def geocode_address(row, retries=3):
-        # Construct address with or without postal code
-        postal_code_row = postal_codes_df[
-            (postal_codes_df['REGION_POSTALE'] == row['REGION']) &
-            (postal_codes_df['LOCALITE'] == row['LOCALITE'])
-        ]
-
-        if not postal_code_row.empty:
-            postal_code = postal_code_row['NOUVEAU CODE POSTAL'].iloc[0]
-            address = f"{row['ADRESSE GUICHET']}, {row['LOCALITE']}, {row['REGION']} {postal_code}"
-            print(f"Constructed address with postal code: {address}")
-        else:
-            address = f"{row['ADRESSE GUICHET']}, {row['LOCALITE']}, {row['REGION']}"
-            print(f"Constructed address without postal code: {address}")
-
-        # Geocode the constructed address
+    def geocode_address(address, retries=3):  # Now takes only the address
         if not address or not isinstance(address, str) or address.strip() == "":
             print("Geocoding failed: No address provided")
             return None, None
@@ -57,7 +38,7 @@ try:
         for attempt in range(retries):
             try:
                 print(f"Geocoding address: {address}")
-                location = geolocator.geocode(address)  # Use the constructed address
+                location = geolocator.geocode(address)  # Use the address directly
                 if location:
                     print(f"Geocoding successful: {location.latitude}, {location.longitude}")
                     return location.latitude, location.longitude
@@ -78,14 +59,10 @@ try:
     print("DataFrame before geocoding:")
     print(df)
 
-    df_map['latitude'], df_map['longitude'] = zip(*df_map.apply(geocode_address, axis=1))
-
-    # Merge postal codes into df_map
-    df_map = pd.merge(df_map, postal_codes_df[['REGION_POSTALE', 'LOCALITE', 'NOUVEAU CODE POSTAL']], 
-                  left_on=['REGION', 'LOCALITE'], right_on=['REGION_POSTALE', 'LOCALITE'], how='left')
+    df_map['latitude'], df_map['longitude'] = zip(*df_map['ADRESSE GUICHET'].apply(geocode_address))  # Apply to ADRESSE GUICHET
 
     # Select and reorder columns for the final output
-    df_map = df_map[['ADRESSE GUICHET', 'NOUVEAU CODE POSTAL', 'LOCALITE', 'REGION', 'latitude', 'longitude']]
+    df_map = df_map[['ADRESSE GUICHET', 'LOCALITE', 'REGION', 'latitude', 'longitude']]
 
     data_dir = "data"
     bank_locations_geocoded_file = os.path.join(data_dir, "bank_locations_geocoded.csv")
