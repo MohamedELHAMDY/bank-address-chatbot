@@ -1,34 +1,27 @@
+from flask import Flask, request, jsonify
 import json
+import os
 
-# File path
-json_file = "data/addresses.json"
+app = Flask(__name__)
 
-def load_data():
-    """Load processed bank address data."""
-    try:
-        with open(json_file, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except FileNotFoundError:
-        print("❌ Data file not found. Run 'create_address_json.py' first.")
-        return []
+# Load bank data
+DATA_FILE = os.path.join(os.path.dirname(__file__), "../data/addresses.json")
 
-bank_data = load_data()
+with open(DATA_FILE, "r", encoding="utf-8") as f:
+    bank_data = json.load(f)
 
-def search_bank(bank_name, locality):
-    """Find a bank's address by name and locality."""
-    for bank in bank_data:
-        if bank["BANQUE"].lower() == bank_name.lower() and bank["LOCALITE"].lower() == locality.lower():
-            return f"🏦 {bank['BANQUE']} - {bank['NOM GUICHET']} 📍 {bank['ADRESSE GUICHET']}"
-    
-    return "❌ No matching bank found. Try a different name or locality."
+@app.route("/get_address", methods=["GET"])
+def get_address():
+    """Fetches bank addresses based on query"""
+    bank_name = request.args.get("bank", "").strip().lower()
+    location = request.args.get("location", "").strip().lower()
 
-# CLI chatbot loop
-print("💬 Welcome to Bank Address Chatbot! Type 'exit' to quit.")
-while True:
-    bank_name = input("Enter the bank name: ").strip()
-    if bank_name.lower() == "exit":
-        break
-    locality = input("Enter the locality: ").strip()
-    
-    result = search_bank(bank_name, locality)
-    print(result)
+    results = [
+        bank for bank in bank_data
+        if bank_name in bank["BANQUE"].lower() and location in bank["LOCALITE"].lower()
+    ]
+
+    return jsonify(results if results else {"message": "No results found"})
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=True)
