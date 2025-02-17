@@ -22,7 +22,7 @@ jobs:
           pip install pandas openpyxl
 
       - name: Debug: List files before processing
-        run: |  # Correct indentation here
+        run: |
           echo "Current Directory: $(pwd)"
           ls -l
           ls -l data/
@@ -30,10 +30,10 @@ jobs:
 
       - name: Run data processing script
         working-directory: ./scripts
-        run: python create_address_json.py  # No need for | here for a single command
+        run: python create_address_json.py
 
       - name: Debug: Verify JSON output
-        run: |  # Correct indentation here
+        run: |
           ls -l data/
           cat data/addresses.json
 
