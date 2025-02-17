@@ -25,3 +25,16 @@ function getBankAddress() {
         console.error("Error fetching data:", error);
     });
 }
+
+function startListening() {
+    let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = "fr-FR"; // Set to French if needed
+    recognition.start();
+
+    recognition.onresult = function(event) {
+        document.getElementById("userInput").value = event.results[0][0].transcript;
+        getBankAddress(); // Auto-fetch data
+    };
+}
+
+document.getElementById("voiceBtn").addEventListener("click", startListening);
