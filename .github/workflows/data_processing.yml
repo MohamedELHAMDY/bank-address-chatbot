@@ -22,14 +22,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install pandas openpyxl geopy
 
-      - name: Upgrade openpyxl  # The crucial addition
-        run: pip install --upgrade openpyxl
-
       - name: Run data processing script
-        run: python scripts/data_processing.py
+        run: |
+          python scripts/data_processing.py
 
       - name: Run geocoding script
-        run: python scripts/geocoding.py
+        run: |
+          python scripts/geocoding.py
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
