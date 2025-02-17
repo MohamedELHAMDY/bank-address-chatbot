@@ -107,5 +107,10 @@ try:
 
     print("Current working directory:", os.getcwd())
 
+    # Check if files were created (for debugging)
+    print(f"File exists (bank_locations_geocoded.csv): {os.path.exists(bank_locations_geocoded_file)}")
+    print(f"File exists (bank_locations.csv): {os.path.exists(bank_locations_file)}")
+
+
 except Exception as e:
     print(f"An error occurred: {e}")
