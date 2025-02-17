@@ -10,12 +10,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          token: ${{ secrets.MY_SCRIPT_TOKEN }}  # Replace with your actual secret name
+          token: ${{ secrets.MY_SCRIPT_TOKEN }}  # This is correct for checkout
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'  # Or your preferred Python version
+          python-version: '3.9'
 
       - name: Install dependencies
         run: |
@@ -30,7 +30,8 @@ jobs:
         with:
           commit_message: "Automated data processing and geocoding"
           file_pattern: data/bank_locations_geocoded.csv data/bank_locations.csv
-          token: ${{ secrets.MY_SCRIPT_TOKEN }}  # Same secret name as above
+          # REMOVE the 'token' line below
+          # token: ${{ secrets.MY_SCRIPT_TOKEN }}  # This is incorrect here
 
       - name: List files (for debugging)
         run: ls -l data
