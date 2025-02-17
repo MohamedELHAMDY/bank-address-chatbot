@@ -1,104 +1,107 @@
-# mawqi-tamwil
-Ce projet vise à créer une carte interactive et accessible des ressources financières à travers le Maroc, permettant aux individus de localiser facilement les banques, les institutions de microfinance et d'autres services financiers à proximité. 
-# Mawqia Tamwil (Localisateur Financier)
+Bank Address Chatbot
+Bank Address Chatbot is a tool designed to help users quickly find bank branch addresses through a chatbot interface. The project processes raw banking data and serves it via a Flask API with a user-friendly web interface.
 
-Ce projet vise à créer une carte interactive et accessible des ressources financières à travers le Maroc, permettant aux individus de localiser facilement les banques, les institutions de microfinance et d'autres services financiers à proximité. Il utilise les données ouvertes de Bank Al-Maghrib pour promouvoir l'inclusion financière et améliorer l'accès aux services financiers pour tous les Marocains.  Ce projet a été développé dans le cadre du hackathon Open Data.
+Features
+Data Processing: Converts Excel datasets into a structured JSON format.
+Flask API: Serves bank address data for querying.
+Chatbot Interface: Provides an interactive, web-based interface.
+Fuzzy Matching: Uses fuzzy string matching (via fuzzywuzzy) to improve search results. (For better performance, consider installing python-Levenshtein.)
+Project Structure
+cpp
+Copier
+Modifier
+bank-address-chatbot-main/
+├── .github/workflows/
+│   ├── data_processing.yml
+│   └── export-requirements.yml
+├── data/
+│   ├── addresses.json
+│   ├── codes-postaux-localites-2018.xlsx
+│   └── detail-implantation-bancaire-2022.xlsx
+├── scripts/
+│   ├── create_address_json.py
+│   ├── load_data.py
+│   └── style.css
+├── static/
+│   ├── index.html
+│   └── script.js
+├── LICENSE
+├── README.md
+├── pyproject.toml
+└── requirements.txt
+Installation
+Clone the Repository:
 
-## Table des matières
+bash
+Copier
+Modifier
+git clone https://github.com/MohamedELHAMDY/bank-address-chatbot.git
+cd bank-address-chatbot
+Install Dependencies:
 
-- [Introduction](#introduction)
-- [Fonctionnalités](#fonctionnalités)
-- [Technologies utilisées](#technologies-utilisées)
-- [Sources de données](#sources-de-données)
-- [Installation](#installation)
-- [Utilisation](#utilisation)
-- [Contribution](#contribution)
-- [Licence](#licence)
-- [Contact](#contact)
+Ensure you are using Python 3.11 or later. Then run:
 
-## Introduction
+bash
+Copier
+Modifier
+pip install -r requirements.txt
+Your requirements.txt should include:
 
-L'accès aux services financiers est un facteur crucial pour l'autonomisation économique et le développement social. "Mawqia Tamwil" cherche à combler le fossé de l'inclusion financière en fournissant une plateforme conviviale qui simplifie la recherche de ressources financières. Que vous soyez un particulier à la recherche d'une agence bancaire locale, un micro-entrepreneur en quête d'options de microfinance ou un chercheur étudiant l'accès financier, ce projet offre un outil précieux.
+nginx
+Copier
+Modifier
+pandas
+flask
+fuzzywuzzy
+python-Levenshtein
+gunicorn
+Prepare the Data:
 
-## Fonctionnalités
+Run the data processing script to generate/update the JSON file:
 
-*   **Carte interactive:** Explorez une carte du Maroc avec des marqueurs indiquant l'emplacement des institutions financières.
-*   **Recherche et filtrage:** Recherchez facilement des institutions spécifiques par nom ou filtrez par région, type d'institution (banque, microfinance, etc.) ou services offerts (lorsque les données sont disponibles).
-*   **Informations détaillées:** Cliquez sur un marqueur pour afficher des informations détaillées sur l'institution, notamment le nom, l'adresse, les coordonnées et les services offerts (lorsque disponibles).
-*   **Téléchargement des données:** Téléchargez les données sous-jacentes au format CSV pour une analyse ou une utilisation ultérieure.
-*   **(Futur) Support multilingue:** Options linguistiques arabe et français.
-*   **(Futur) Contributions des utilisateurs:** Permettre aux utilisateurs de contribuer aux données en suggérant de nouveaux emplacements ou des mises à jour.
+bash
+Copier
+Modifier
+python scripts/create_address_json.py
+Usage
+Run the Flask App:
 
-## Technologies utilisées
+Start the development server by running:
 
-*   **Cartographie:** Leaflet (bibliothèque JavaScript pour les cartes interactives)
-*   **Traitement des données:** Python (avec la bibliothèque Pandas)
-*   **Géocodage:** OpenStreetMap Nominatim (pour convertir les adresses en coordonnées)
-*   **Développement Web:** HTML, CSS, JavaScript
-*   **Stockage des données:** CSV (Comma Separated Values)
-*   **Contrôle de version:** Git & GitHub
+bash
+Copier
+Modifier
+python scripts/load_data.py
+The Flask app will run on http://127.0.0.1:5000.
 
-## Sources de données
+Access the Chatbot Interface:
 
-*   **Source de données principale:** "Détail implantation bancaire au 31 décembre 2022" de Bank Al-Maghrib.
-*   **Sources de données potentielles futures:** Données sur les institutions de microfinance, les agences de transfert d'argent, les coopératives de crédit, les services financiers mobiles et les programmes de littératie financière (de Bank Al-Maghrib ou d'autres organisations pertinentes).
+Open the static/index.html file in your browser, or navigate to the deployed URL if hosted on a server.
 
-## Installation
+Production Deployment:
 
-1.  Clonez le dépôt :
+For production, use a WSGI server like gunicorn:
 
-    ```bash
-    git clone [https://github.com/MohamedELHAMDY/mawqi-tamwil.git](https://www.google.com/search?q=https://github.com/MohamedELHAMDY/mawqi-tamwil.git)  # Remplacez par l'URL de votre dépôt
-    ```
+bash
+Copier
+Modifier
+gunicorn -w 4 -b 0.0.0.0:5000 load_data:app
+Deployment on Render
+This project is ready for deployment on Render:
 
-2.  (Si vous développez localement) Naviguez jusqu'au répertoire du projet :
+Python Version: 3.11.11 (or as specified in your environment)
+Build Command:
+bash
+Copier
+Modifier
+pip install -r requirements.txt && python scripts/load_data.py
+Deployment Time: Typically 2–5 minutes for free-tier deployments. Caching and using a paid plan can reduce this time.
+Contributing
+Contributions are welcome! Please fork this repository and submit a pull request with your enhancements or bug fixes.
 
-    ```bash
-    cd mawqi-tamwil
-    ```
+License
+This project is licensed under the MIT License.
 
-3.  (Si vous développez localement) Vous pouvez configurer un serveur Web local (par exemple, en utilisant le module `http.server` de Python ou une solution plus avancée comme XAMPP ou MAMP) pour afficher la carte dans votre navigateur.
+Contact
+If you have any questions or need support, please open an issue in the repository or contact the project maintainer.
 
-## Utilisation
-
-1.  Ouvrez le fichier `index.html` dans votre navigateur Web. (Si vous utilisez GitHub Pages, le site sera en ligne à l'URL fournie).
-2.  Explorez la carte, zoomez et dézoomez, et cliquez sur les marqueurs pour afficher les détails.
-3.  Utilisez les options de recherche et de filtrage (lorsqu'elles seront implémentées) pour trouver des institutions spécifiques.
-4.  Téléchargez les données à l'aide du bouton de téléchargement (lorsqu'il sera implémenté).
-
-## Contribution
-
-Les contributions sont les bienvenues ! N'hésitez pas à soumettre des demandes d'extraction, à ouvrir des problèmes ou à suggérer de nouvelles fonctionnalités. Consultez le fichier `CONTRIBUTING.md` (si vous en créez un) pour obtenir des instructions détaillées.
-
-## Licence
-
-MIT License
-
-Copyright (c) 2025 Mohamed El Hamdy
-
-La permission est accordée, à titre gratuit, à toute personne obtenant une copie
-de ce logiciel et des fichiers de documentation associés (le "Logiciel"), de
-traiter le Logiciel sans restriction, y compris, sans limitation, les droits
-d'utiliser, de copier, de modifier, de fusionner, de publier, de distribuer, de
-concéder en sous-licence et/ou de vendre des copies du Logiciel, et de
-permettre aux personnes auxquelles le Logiciel est fourni de le faire, sous
-les conditions suivantes :   
-
-L'avis de droit d'auteur ci-dessus et cet avis de permission doivent être
-inclus dans toutes les copies ou parties substantielles du Logiciel.
-
-LE LOGICIEL EST FOURNI "TEL QUEL", SANS GARANTIE D'AUCUNE SORTE, EXPRESSE
-OU IMPLICITE, Y COMPRIS, MAIS SANS S'Y LIMITER, LES GARANTIES DE
-COMMERCIALISATION, D'ADÉQUATION À UN USAGE PARTICULIER ET DE
-NON-CONTREFAÇON. EN AUCUN CAS, LES AUTEURS OU TITULAIRES DU DROIT
-D'AUTEUR NE POURRONT ÊTRE TENUS RESPONSABLES DE TOUTE RÉCLAMATION,
-DE TOUT DOMMAGE OU DE TOUTE AUTRE RESPONSABILITÉ, QUE CE SOIT DANS
-LE CADRE D'UN CONTRAT, D'UN DÉLIT OU AUTRE, DÉCOULANT DU LOGICIEL,
-DE SON UTILISATION OU D'AUTRES TRAITÉS DANS LE LOGICIEL.   
-
-
-## Contact
-
-*   Mohamed El Hamdy
-*   [email address removed]
-*   [linkedin.com/in/melhamdy](linkedin.com/in/melhamdy)
