@@ -5,7 +5,7 @@ import googlemaps
 import time
 
 excel_file = "data/detail-implantation-bancaire-2022.xlsx"
-
+#
 try:
     # Load Excel data
     workbook = openpyxl.load_workbook(excel_file)
