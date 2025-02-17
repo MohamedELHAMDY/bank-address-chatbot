@@ -22,7 +22,10 @@ header_row = [cell.value for cell in sheet[5]]
 # Create DataFrame
 df = pd.DataFrame(data_rows, columns=header_row)
 
-# Clean addresses (before setting column names to avoid potential KeyError)
+# Set correct column names - THIS IS CRUCIAL (Do this FIRST)
+df.columns = ['Unnamed: 0', 'REGION', 'LOCALITE', 'NOM_BANQUE', 'CATEGORIE', 'CODE GUICHET', 'NOM GUICHET', 'ADRESSE GUICHET']
+
+# Now you can clean the addresses
 def clean_address(address):
     if isinstance(address, str):
         cleaned_address = address.strip().replace(" ,", ",").replace("  ", " ")
@@ -31,9 +34,6 @@ def clean_address(address):
 
 df['ADRESSE GUICHET'] = df['ADRESSE GUICHET'].apply(clean_address)
 
-
-# Set correct column names - THIS IS CRUCIAL
-df.columns = ['Unnamed: 0', 'REGION', 'LOCALITE', 'NOM_BANQUE', 'CATEGORIE', 'CODE GUICHET', 'NOM GUICHET', 'ADRESSE GUICHET']
 
 df_map = df[['REGION', 'LOCALITE', 'NOM_BANQUE', 'CATEGORIE', 'NOM GUICHET', 'ADRESSE GUICHET']].copy()
 
@@ -92,7 +92,7 @@ print("\nFirst 5 Rows of DataFrame:")
 print(df.head())
 
 print("\ndf_map Info:")
-df_map.info() # Corrected: Added missing parenthesis
+df_map.info()
 print("\nFirst 5 Rows of df_map:")
 print(df_map.head())
 
