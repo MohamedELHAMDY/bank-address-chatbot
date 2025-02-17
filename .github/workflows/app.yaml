@@ -1,0 +1,11 @@
+runtime: python39  # Ensure this matches your Python version
+entrypoint: gunicorn -b :$PORT app:app  # Change app name if necessary
+
+env_variables:
+  FLASK_ENV: "production"  # Optional: set Flask environment variable
+
+handlers:
+  - url: /static
+    static_dir: static/
+  - url: /.*
+    script: auto
