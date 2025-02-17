@@ -4,17 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bank Address Chatbot</title>
-    <script defer src="script.js"></script>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; text-align: center; }
-        input, button { padding: 10px; margin: 5px; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h2>🏦 Bank Address Chatbot</h2>
-    <input type="text" id="bankName" placeholder="Enter bank name">
-    <input type="text" id="locality" placeholder="Enter locality">
-    <button onclick="searchBank()">Search</button>
-    <p id="result"></p>
+    <div class="chat-container">
+        <h2>Bank Address Chatbot</h2>
+        <input type="text" id="userInput" placeholder="Enter bank name and location (e.g., BMCE in Casablanca)">
+        <button onclick="getBankAddress()">Search</button>
+        <div id="chatResponse"></div>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
