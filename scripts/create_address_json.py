@@ -3,8 +3,8 @@ import pandas as pd
 import os
 import json
 
-excel_file = "../data/detail-implantation-bancaire-2022.xlsx"  # Path relative to repository root
-output_file = "../data/addresses.json"  # Path relative to repository root
+excel_file = "data/detail-implantation-bancaire-2022.xlsx"  # Path relative to repository root
+output_file = "data/addresses.json"  # Path relative to repository root
 
 try:
     # Load Excel data
@@ -15,20 +15,24 @@ try:
     sheet = workbook.active
 
     header_row = [cell.value for cell in sheet[5]]  # Header row from row 5
+    print("Header Row:", header_row)  # Print the header row
+
     data_rows = []
-    for row in sheet.iter_rows(min_row=6):       # Data rows from row 6
+    for row in sheet.iter_rows(min_row=6):
         row_data = {}
         for i, cell in enumerate(row):
             row_data[header_row[i]] = cell.value
         data_rows.append(row_data)
 
-    print("Data rows read from Excel:\n", data_rows)  # Print data rows
+    print("Data Rows:\n", data_rows)  # Print the data rows
 
     df = pd.DataFrame(data_rows)
 
-    print("DataFrame created successfully:", df.shape)
-    print("Columns in DataFrame:", df.columns)
-    print("First 5 rows of DataFrame:\n", df.head())
+    print("DataFrame Info:")
+    df.info()  # Print DataFrame information
+
+    print("DataFrame Head:\n", df.head())  # Print the first few rows of the DataFrame
+
 
     # Clean addresses (if needed)
     def clean_address(address):
