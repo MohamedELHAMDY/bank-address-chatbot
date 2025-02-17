@@ -41,7 +41,7 @@ df_map = df[['REGION', 'LOCALITE', 'NOM_BANQUE', 'CATEGORIE', 'NOM GUICHET', 'AD
 def geocode_address(address, retries=3):
     geolocator = Nominatim(user_agent="mawqi_tamwil_app")
     for attempt in range(retries):
-        try
+        try:
             print(f"Geocoding address: {address}")  # Print the address being geocoded
             location = geolocator.geocode(address)
             if location:
