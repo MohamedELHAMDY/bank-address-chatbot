@@ -10,12 +10,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }} # Use the new secret name
+          token: ${{ secrets.MY_SCRIPT_TOKEN }}  # Use your secret name (e.g., MY_SCRIPT_TOKEN)
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
+          python-version: '3.9'  # Or your preferred Python version
 
       - name: Install dependencies
         run: |
@@ -30,7 +30,8 @@ jobs:
         with:
           commit_message: "Automated data processing and geocoding"
           file_pattern: data/bank_locations_geocoded.csv data/bank_locations.csv
-          # push_options: '--force-with-lease'  # Remove or comment out this line
+          # push_options: '--force-with-lease'  # Remove or comment out this line if still causing issues
+          token: ${{ secrets.MY_SCRIPT_TOKEN }}  # Use the same secret name here
 
       - name: List files (for debugging)
         run: ls -l data
