@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "bank-address-chatbot"
+version = "0.1.0"
+description = "A chatbot to retrieve bank addresses"
+authors = ["Your Name <youremail@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pandas = "^2.2.3"
+openpyxl = "^3.1.5"
+requests = "^2.26.0"  # Example, add any additional dependencies
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2"  # Example, add dev dependencies if needed
