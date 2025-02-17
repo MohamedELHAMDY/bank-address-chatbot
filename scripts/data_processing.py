@@ -1,7 +1,7 @@
 import openpyxl
 import pandas as pd
 import os
-from geopy.geocoders import Nominatim
+import googlemaps  # Import googlemaps
 from geopy.exc import GeocoderTimedOut, GeocoderServiceError
 import time
 
@@ -26,40 +26,42 @@ try:
 
     df['ADRESSE GUICHET'] = df['ADRESSE GUICHET'].apply(clean_address)
 
-    # Select columns for geocoding
-    df_map = df[['REGION', 'LOCALITE', 'NOM_BANQUE', 'CATEGORIE', 'NOM GUICHET', 'ADRESSE GUICHET']].copy()
+    # Select columns
+    df_map = df[['REGION', 'LOCALITE', 'NOM_BANQUE', 'CATEGORIE', 'CODE GUICHET', 'NOM GUICHET', 'ADRESSE GUICHET']].copy()
 
-    def geocode_address(address, retries=3):  # Now takes only the address
-        if not address or not isinstance(address, str) or address.strip() == "":
-            print("Geocoding failed: No address provided")
+    def construct_full_address(row):
+        address_parts = [
+            row['ADRESSE GUICHET'],
+            row['NOM GUICHET'],
+            row['CODE GUICHET'],
+            row['CATEGORIE'],
+            row['NOM_BANQUE'],
+            row['LOCALITE'],
+            row['REGION']
+        ]
+        cleaned_parts = [part for part in address_parts if part is not None and str(part).strip() != ""]
+        full_address = ", ".join(cleaned_parts)
+        return full_address
+
+    df_map['full_address'] = df_map.apply(construct_full_address, axis=1)
+
+    # Initialize Google Maps client (using environment variable for API key)
+    gmaps = googlemaps.Client(key=os.environ.get("GOOGLE_MAPS_API_KEY"))
+
+    def geocode_with_google(address):
+        try:
+            geocode_result = gmaps.geocode(address)
+            if geocode_result:
+                location = geocode_result[0]['geometry']['location']
+                return location['lat'], location['lng']
+            else:
+                print(f"Geocoding failed for: {address}")
+                return None, None
+        except Exception as e:
+            print(f"Error geocoding {address}: {e}")
             return None, None
 
-        geolocator = Nominatim(user_agent="mawqi_tamwil_app")
-        for attempt in range(retries):
-            try:
-                print(f"Geocoding address: {address}")
-                location = geolocator.geocode(address)  # Use the address directly
-                if location:
-                    print(f"Geocoding successful: {location.latitude}, {location.longitude}")
-                    return location.latitude, location.longitude
-                else:
-                    print(f"Geocoding failed for address: {address}")
-                    return None, None
-            except (GeocoderTimedOut, GeocoderServiceError) as e:
-                print(f"Geocoding error for address {address}: {e}")
-                if attempt < retries - 1:
-                    print("Retrying...")
-                    time.sleep(1)
-                    continue
-                else:
-                    print("Max retries reached for address:", address)
-                    return None, None
-            time.sleep(1)
-
-    print("DataFrame before geocoding:")
-    print(df)
-
-    df_map['latitude'], df_map['longitude'] = zip(*df_map['ADRESSE GUICHET'].apply(geocode_address))  # Apply to ADRESSE GUICHET
+    df_map['latitude'], df_map['longitude'] = zip(*df_map['full_address'].apply(geocode_with_google))
 
     # Select and reorder columns for the final output
     df_map = df_map[['ADRESSE GUICHET', 'LOCALITE', 'REGION', 'latitude', 'longitude']]
