@@ -6,21 +6,19 @@ from geopy.exc import GeocoderTimedOut, GeocoderServiceError
 import time
 
 excel_file = "data/detail-implantation-bancaire-2022.xlsx"
-postal_codes_file = "data/codes-postaux-localites-2018.xlsx"  # Path to postal codes file
+postal_codes_file = "data/codes-postaux-localites-2018.xlsx"
 
 try:
+    # Load Excel data
     workbook = openpyxl.load_workbook(excel_file)
     sheet = workbook.active
-
     data_rows = []
     for row in sheet.iter_rows(min_row=6):
         data_rows.append([cell.value for cell in row])
-
     header_row = [cell.value for cell in sheet[5]]
     df = pd.DataFrame(data_rows, columns=header_row)
 
-    df.columns = ['Unnamed: 0', 'REGION', 'LOCALITE', 'NOM_BANQUE', 'CATEGORIE', 'CODE GUICHET', 'NOM GUICHET', 'ADRESSE GUICHET']
-
+    # Clean addresses
     def clean_address(address):
         if isinstance(address, str):
             cleaned_address = address.strip().replace(" ,", ",").replace("  ", " ")
@@ -29,13 +27,16 @@ try:
 
     df['ADRESSE GUICHET'] = df['ADRESSE GUICHET'].apply(clean_address)
 
+    # Select columns for geocoding
     df_map = df[['REGION', 'LOCALITE', 'NOM_BANQUE', 'CATEGORIE', 'NOM GUICHET', 'ADRESSE GUICHET']].copy()
 
-    postal_codes_df = pd.read_excel(postal_codes_file)  # Load postal codes data
+    # Load postal codes data
+    postal_codes_df = pd.read_excel(postal_codes_file)
 
     def geocode_address(row, retries=3):
+        # Construct address with or without postal code
         postal_code_row = postal_codes_df[
-            (postal_codes_df['REGION_POSTALE'] == row['REGION']) & 
+            (postal_codes_df['REGION_POSTALE'] == row['REGION']) &
             (postal_codes_df['LOCALITE'] == row['LOCALITE'])
         ]
 
@@ -47,6 +48,7 @@ try:
             address = f"{row['ADRESSE GUICHET']}, {row['LOCALITE']}, {row['REGION']}"
             print(f"Constructed address without postal code: {address}")
 
+        # Geocode the constructed address
         if not address or not isinstance(address, str) or address.strip() == "":
             print("Geocoding failed: No address provided")
             return None, None
@@ -55,7 +57,7 @@ try:
         for attempt in range(retries):
             try:
                 print(f"Geocoding address: {address}")
-                location = geolocator.geocode(address)
+                location = geolocator.geocode(address)  # Use the constructed address
                 if location:
                     print(f"Geocoding successful: {location.latitude}, {location.longitude}")
                     return location.latitude, location.longitude
