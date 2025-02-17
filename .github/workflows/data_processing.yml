@@ -2,7 +2,7 @@ name: Data Processing and Geocoding
 
 on:
   push:
-    branches: [main, master]
+    branches: [ main, master ]
 
 jobs:
   process_data:
@@ -23,16 +23,14 @@ jobs:
           pip install pandas openpyxl geopy
 
       - name: Run data processing script
-        run: |
-          python scripts/data_processing.py
+        run: python scripts/data_processing.py
 
       - name: Run geocoding script
-        run: |
-          python scripts/geocoding.py
+        run: python scripts/geocoding.py
 
-      - name: Commit changes
+      - name: Commit changes  # The crucial addition
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "Automated data processing and geocoding"
-          file_pattern: data/bank_locations_geocoded.csv
-          push_options: '--force-with-lease'
+          file_pattern: data/bank_locations_geocoded.csv # Specify the file to commit
+          push_options: '--force-with-lease' # Important: Force push to avoid conflicts
