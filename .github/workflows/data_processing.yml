@@ -10,19 +10,19 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          token: ${{ secrets.MY_SCRIPT_TOKEN }}  # This is correct for checkout
+          token: ${{ secrets.MY_SCRIPT_TOKEN }}
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
 
-      - name: Install dependencies
+      - name: Install dependencies  # Install googlemaps here
         run: |
           python -m pip install --upgrade pip
-          pip install pandas openpyxl geopy
+          pip install pandas openpyxl googlemaps  # Add googlemaps
 
-      - name: Run data processing script
+      - name: Run data processing and geocoding script
         run: python scripts/data_processing.py
 
       - name: Commit changes
@@ -30,8 +30,6 @@ jobs:
         with:
           commit_message: "Automated data processing and geocoding"
           file_pattern: data/bank_locations_geocoded.csv data/bank_locations.csv
-          # REMOVE the 'token' line below
-          # token: ${{ secrets.MY_SCRIPT_TOKEN }}  # This is incorrect here
 
       - name: List files (for debugging)
         run: ls -l data
