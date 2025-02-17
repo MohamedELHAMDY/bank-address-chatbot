@@ -8,9 +8,7 @@ jobs:
   process_data:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.MY_SCRIPT_TOKEN }}
+      - uses: actions/checkout@v3  # This is crucial!
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -23,10 +21,10 @@ jobs:
           pip install pandas openpyxl
 
       - name: Run data processing script
-        working-directory: ./scripts  # Change working directory to scripts/
+        working-directory: ./scripts # Go to the scripts directory
         run: |
-          ls -l . # List files in the current directory (should be scripts/)
-          python create_address_json.py # Execute the script directly
+          ls -l .  # List files in the scripts directory (for debugging)
+          python create_address_json.py
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
