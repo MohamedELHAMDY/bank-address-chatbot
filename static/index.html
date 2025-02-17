@@ -1,15 +1,20 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Mawqia Tamwil</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank Address Chatbot</title>
+    <script defer src="script.js"></script>
     <style>
-        #map { height: 600px; }
+        body { font-family: Arial, sans-serif; margin: 20px; text-align: center; }
+        input, button { padding: 10px; margin: 5px; }
     </style>
 </head>
 <body>
-    <div id="map"></div>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="script.js"></script>
+    <h2>🏦 Bank Address Chatbot</h2>
+    <input type="text" id="bankName" placeholder="Enter bank name">
+    <input type="text" id="locality" placeholder="Enter locality">
+    <button onclick="searchBank()">Search</button>
+    <p id="result"></p>
 </body>
-</html> 
+</html>
