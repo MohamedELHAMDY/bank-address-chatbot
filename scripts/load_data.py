@@ -1,25 +1,34 @@
-import pandas as pd
 import json
 
-# Load Excel file
-file_path = "data/detail-implantation-bancaire-2022.xlsx"
-output_json = "data/bank_addresses.json"
+# File path
+json_file = "data/addresses.json"
 
-try:
-    df = pd.read_excel(file_path, dtype=str)  # Read as string to avoid type issues
+def load_data():
+    """Load processed bank address data."""
+    try:
+        with open(json_file, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        print("❌ Data file not found. Run 'create_address_json.py' first.")
+        return []
 
-    # Keep only required columns
-    required_columns = ["REGION", "LOCALITE", "BANQUE", "CATEGORIE", "CODE GUICHET", "NOM GUICHET", "ADRESSE GUICHET"]
-    df = df[required_columns]
+bank_data = load_data()
 
-    # Convert DataFrame to dictionary
-    bank_data = df.to_dict(orient="records")
+def search_bank(bank_name, locality):
+    """Find a bank's address by name and locality."""
+    for bank in bank_data:
+        if bank["BANQUE"].lower() == bank_name.lower() and bank["LOCALITE"].lower() == locality.lower():
+            return f"🏦 {bank['BANQUE']} - {bank['NOM GUICHET']} 📍 {bank['ADRESSE GUICHET']}"
+    
+    return "❌ No matching bank found. Try a different name or locality."
 
-    # Save as JSON
-    with open(output_json, "w", encoding="utf-8") as f:
-        json.dump(bank_data, f, ensure_ascii=False, indent=4)
-
-    print(f"✅ Data successfully saved to {output_json}")
-
-except Exception as e:
-    print(f"❌ Error loading data: {e}")
+# CLI chatbot loop
+print("💬 Welcome to Bank Address Chatbot! Type 'exit' to quit.")
+while True:
+    bank_name = input("Enter the bank name: ").strip()
+    if bank_name.lower() == "exit":
+        break
+    locality = input("Enter the locality: ").strip()
+    
+    result = search_bank(bank_name, locality)
+    print(result)
