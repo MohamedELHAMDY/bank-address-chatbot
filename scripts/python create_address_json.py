@@ -1,8 +1,6 @@
 import openpyxl
 import pandas as pd
 import os
-import googlemaps
-import time
 import json
 
 excel_file = "data/detail-implantation-bancaire-2022.xlsx"
@@ -15,11 +13,19 @@ try:
 
     workbook = openpyxl.load_workbook(excel_file)
     sheet = workbook.active
+
+    # Get header row from row 5
+    header_row = [cell.value for cell in sheet[5]]
+
+    # Read data rows starting from row 6
     data_rows = []
-    for row in sheet.iter_rows(min_row=6):  # Start from row 6 (adjust if needed)
-        data_rows.append([cell.value for cell in row])
-    header_row = [cell.value for cell in sheet[5]]  # Get header from row 5
-    df = pd.DataFrame(data_rows, columns=header_row)
+    for row in sheet.iter_rows(min_row=6):
+        row_data = {}
+        for i, cell in enumerate(row):
+            row_data[header_row[i]] = cell.value  # Map cell value to header
+        data_rows.append(row_data)
+
+    df = pd.DataFrame(data_rows)
 
     print("DataFrame created successfully:", df.shape)  # Print the shape of the DataFrame
     print("Columns in DataFrame:", df.columns)  # Print column names for debugging
@@ -31,7 +37,10 @@ try:
             return cleaned_address
         return address
 
-    df['ADRESSE GUICHET'] = df['ADRESSE GUICHET'].apply(clean_address)
+    if 'ADRESSE GUICHET' in df.columns:  # Check if the column exists
+        df['ADRESSE GUICHET'] = df['ADRESSE GUICHET'].apply(clean_address)
+    else:
+        print("Warning: 'ADRESSE GUICHET' column not found in DataFrame.")
 
     # Create the address dictionary
     address_dict = {}
@@ -39,8 +48,8 @@ try:
     for index, row in df.iterrows():
         # Combine relevant fields to create a unique identifier.
         # Adjust the fields used here to create the identifier as needed for your data.
-        identifier = f"{row['NOM_BANQUE']} - {row['NOM GUICHET']} - {row['LOCALITE']}"
-        address = row['ADRESSE GUICHET']
+        identifier = f"{row.get('NOM_BANQUE', '')} - {row.get('NOM GUICHET', '')} - {row.get('LOCALITE', '')}"
+        address = row.get('ADRESSE GUICHET')  # Use .get() to handle missing columns
         if identifier not in address_dict:  # Only add if identifier is unique
             address_dict[identifier] = address
         else:
