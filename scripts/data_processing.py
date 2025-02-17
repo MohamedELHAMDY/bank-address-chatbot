@@ -6,6 +6,7 @@ from geopy.exc import GeocoderTimedOut, GeocoderServiceError
 import time
 
 excel_file = "data/detail-implantation-bancaire-2022.xlsx"
+postal_codes_file = "data/codes-postaux-localites-2018.xlsx"  # Path to postal codes file
 
 try:
     workbook = openpyxl.load_workbook(excel_file)
@@ -30,9 +31,21 @@ try:
 
     df_map = df[['REGION', 'LOCALITE', 'NOM_BANQUE', 'CATEGORIE', 'NOM GUICHET', 'ADRESSE GUICHET']].copy()
 
+    postal_codes_df = pd.read_excel(postal_codes_file)  # Load postal codes data
+
     def geocode_address(row, retries=3):
-        address = f"{row['ADRESSE GUICHET']}, {row['LOCALITE']}, {row['REGION']}"
-        print(f"Constructed address: {address}")
+        postal_code_row = postal_codes_df[
+            (postal_codes_df['REGION_POSTALE'] == row['REGION']) & 
+            (postal_codes_df['LOCALITE'] == row['LOCALITE'])
+        ]
+
+        if not postal_code_row.empty:
+            postal_code = postal_code_row['NOUVEAU CODE POSTAL'].iloc[0]
+            address = f"{row['ADRESSE GUICHET']}, {row['LOCALITE']}, {row['REGION']} {postal_code}"
+            print(f"Constructed address with postal code: {address}")
+        else:
+            address = f"{row['ADRESSE GUICHET']}, {row['LOCALITE']}, {row['REGION']}"
+            print(f"Constructed address without postal code: {address}")
 
         if not address or not isinstance(address, str) or address.strip() == "":
             print("Geocoding failed: No address provided")
