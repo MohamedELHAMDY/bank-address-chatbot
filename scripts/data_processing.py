@@ -3,6 +3,8 @@ import pandas as pd
 excel_file = "data/detail-implantation-bancaire-2022.xlsx"
 df = pd.read_excel(excel_file)
 
+print(df.columns)  # Print the column names
+
 def clean_address(address):
     address = str(address).strip()
     address = address.replace(" ,", ",")
