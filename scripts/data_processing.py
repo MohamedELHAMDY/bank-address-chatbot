@@ -92,7 +92,7 @@ print("\nFirst 5 Rows of DataFrame:")
 print(df.head())
 
 print("\ndf_map Info:")
-print(df_map.info()
+df_map.info() # Corrected: Added missing parenthesis
 print("\nFirst 5 Rows of df_map:")
 print(df_map.head())
 
