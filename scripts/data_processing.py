@@ -7,34 +7,25 @@ excel_file = "data/detail-implantation-bancaire-2022.xlsx"
 workbook = openpyxl.load_workbook(excel_file)
 sheet = workbook.active
 
-# Extract data rows (including the header row)
+# Extract data rows (starting from row 6)
 data_rows = []
-for row in sheet.iter_rows():  # Iterate through ALL rows
+for row in sheet.iter_rows(min_row=6):  # Start from row 6
     data_rows.append([cell.value for cell in row])
 
-# Identify column indices (adjust these if your columns are in different positions)
-region_index = 1  # Column B (REGION)
-localite_index = 2  # Column C (LOCALITE)
-nom_banque_index = 3  # Column D (BANQUE)
-categorie_index = 4  # Column E (CATEGORIE)
-code_guichet_index = 5  # Column F (CODE GUICHET)
-nom_guichet_index = 6  # Column G (NOM GUICHET)
-adresse_guichet_index = 7  # Column H (ADRESSE GUICHET)
+# Extract header row (from row 5)
+header_row = [cell.value for cell in sheet[5]]
 
-# Create DataFrame using indices
-df = pd.DataFrame(data_rows[1:], columns=data_rows[0])  # Skip first row (header)
+# Create DataFrame
+df = pd.DataFrame(data_rows, columns=header_row)
 
 def clean_address(address):
     if isinstance(address, str):
         return address.strip().replace(" ,", ",").replace("  ", " ")
     return address
 
-df['ADRESSE GUICHET'] = df.iloc[:, adresse_guichet_index - 1].apply(clean_address)  # Use corrected index and subtract 1
+df['ADRESSE GUICHET'] = df['ADRESSE GUICHET'].apply(clean_address)
 
-# Create df_map using indices - THIS IS THE KEY CORRECTION
-df_map = df.iloc[:, [region_index - 1, localite_index - 1, nom_banque_index - 1, categorie_index - 1, code_guichet_index - 1, nom_guichet_index - 1, adresse_guichet_index - 1]].copy()
-
-df_map.columns = ['REGION', 'LOCALITE', 'NOM_BANQUE', 'CATEGORIE', 'CODE GUICHET', 'NOM GUICHET', 'ADRESSE GUICHET']  # Set correct column names
+df_map = df[['REGION', 'LOCALITE', 'NOM_BANQUE', 'CATEGORIE', 'NOM GUICHET', 'ADRESSE GUICHET']].copy()
 
 # Print statements for debugging (remove in production)
 print("DataFrame Info:")
