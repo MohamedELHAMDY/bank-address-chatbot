@@ -2,6 +2,7 @@ import openpyxl
 import pandas as pd
 from geopy.geocoders import Nominatim
 from geopy.exc import GeocoderTimedOut, GeocoderServiceError
+import time  # Import the time module
 
 excel_file = "data/detail-implantation-bancaire-2022.xlsx"
 
@@ -20,6 +21,9 @@ header_row = [cell.value for cell in sheet[5]]
 # Create DataFrame
 df = pd.DataFrame(data_rows, columns=header_row)
 
+# Limit rows for testing (remove in production)
+df = df.head(10)  # Process only the first 10 rows
+
 def clean_address(address):
     if isinstance(address, str):
         return address.strip().replace(" ,", ",").replace("  ", " ")
@@ -37,19 +41,24 @@ def geocode_address(address, retries=3):
     geolocator = Nominatim(user_agent="mawqi_tamwil_app")
     for attempt in range(retries):
         try:
+            print(f"Geocoding address: {address}")  # Print the address being geocoded
             location = geolocator.geocode(address)
             if location:
+                print(f"Geocoding successful: {location.latitude}, {location.longitude}")  # Print successful result
                 return location.latitude, location.longitude
             else:
+                print("Geocoding failed: No location found")  # Print failure message
                 return None, None
         except (GeocoderTimedOut, GeocoderServiceError) as e:
-            print(f"Geocoding failed for {address}: {e}")
+            print(f"Geocoding failed for {address}: {e}")  # Print specific error
             if attempt < retries - 1:
                 print("Retrying...")
+                time.sleep(1) # Wait for 1 second before retrying
                 continue
             else:
                 print("Max retries reached. Giving up.")
                 return None, None
+        time.sleep(1) # Wait for 1 second after each attempt
 
 df_map['latitude'], df_map['longitude'] = zip(*df_map['ADRESSE GUICHET'].apply(geocode_address))
 
