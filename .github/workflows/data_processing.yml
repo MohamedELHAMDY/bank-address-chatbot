@@ -1,12 +1,12 @@
 name: Data Processing and Geocoding
 
 on:
-  push:  # Trigger the workflow on every push to any branch. You can make it more specific if you want.
-    branches: [ main, master ] # or any specific branch
+  push:
+    branches: [ main, master ]
 
 jobs:
   process_data:
-    runs-on: ubuntu-latest  # Use a Linux environment
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
@@ -15,7 +15,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'  # Or any Python version you need
+          python-version: '3.9'
 
       - name: Install dependencies
         run: |
@@ -28,8 +28,9 @@ jobs:
       - name: Run geocoding script
         run: python scripts/geocoding.py
 
-      - name: Commit changes
+      - name: Commit changes  # The crucial addition
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "Automated data processing and geocoding"
-          file_pattern: data/bank_locations_geocoded.csv  # Only commit the geocoded file
+          file_pattern: data/bank_locations_geocoded.csv # Specify the file to commit
+          push_options: '--force-with-lease' # Important: Force push to avoid conflicts
