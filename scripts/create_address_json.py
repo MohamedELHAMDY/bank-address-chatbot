@@ -5,6 +5,7 @@ import json
 
 excel_file = "../data/detail-implantation-bancaire-2022.xlsx"  # Path relative to repository root
 output_file = "../data/addresses.json"  # Path relative to repository root
+
 try:
     # 1. Load Excel data using openpyxl directly (more robust)
     if not os.path.exists(excel_file):
