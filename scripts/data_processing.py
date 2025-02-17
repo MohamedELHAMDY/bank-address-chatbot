@@ -23,9 +23,12 @@ def clean_address(address):
         return address.strip().replace(" ,", ",").replace("  ", " ")
     return address
 
-df['ADRESSE GUICHET'] = df['ADRESSE GUICHET'].apply(clean_address)
+# Set correct column names - THIS IS CRUCIAL
+df.columns = ['REGION', 'LOCALITE', 'NOM_BANQUE', 'CATEGORIE', 'CODE GUICHET', 'NOM GUICHET', 'ADRESSE GUICHET']
 
-df_map = df[['REGION', 'LOCALITE', 'NOM_BANQUE', 'CATEGORIE', 'NOM GUICHET', 'ADRESSE GUICHET']].copy()
+df['ADRESSE GUICHET'] = df['ADRESSE GUICHET'].apply(clean_address)  # Use the *intended* name
+
+df_map = df[['REGION', 'LOCALITE', 'NOM_BANQUE', 'CATEGORIE', 'NOM GUICHET', 'ADRESSE GUICHET']].copy()  # Use the *intended* name
 
 # Print statements for debugging (remove in production)
 print("DataFrame Info:")
