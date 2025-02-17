@@ -4,6 +4,9 @@ version = "0.1.0"
 description = "A chatbot to retrieve bank addresses"
 authors = ["Your Name <youremail@example.com>"]
 
+# Add this section to specify the package location
+packages = [{ include = "src" }]  # If your source code is inside the `src/` folder
+
 [tool.poetry.dependencies]
 python = "^3.9"
 pandas = "^2.2.3"
