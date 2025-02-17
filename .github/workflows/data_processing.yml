@@ -8,7 +8,8 @@ jobs:
   process_data:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3  # This is crucial!
+      - name: Checkout repository
+        uses: actions/checkout@v3  # Ensure repo is available
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -20,11 +21,22 @@ jobs:
           python -m pip install --upgrade pip
           pip install pandas openpyxl
 
-      - name: Run data processing script
-        working-directory: ./scripts # Go to the scripts directory
+      - name: Debug: List files before processing
         run: |
-          ls -l .  # List files in the scripts directory (for debugging)
+          echo "Current Directory: $(pwd)"
+          ls -l
+          ls -l data/
+          file data/detail-implantation-bancaire-2022.xlsx
+
+      - name: Run data processing script
+        working-directory: ./scripts
+        run: |
           python create_address_json.py
+
+      - name: Debug: Verify JSON output
+        run: |
+          ls -l data/
+          cat data/addresses.json
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
