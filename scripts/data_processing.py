@@ -1,8 +1,7 @@
 import openpyxl
 import pandas as pd
 import os
-import googlemaps  # Import googlemaps
-from geopy.exc import GeocoderTimedOut, GeocoderServiceError
+import googlemaps
 import time
 
 excel_file = "data/detail-implantation-bancaire-2022.xlsx"
@@ -41,6 +40,7 @@ try:
         ]
         cleaned_parts = [part for part in address_parts if part is not None and str(part).strip() != ""]
         full_address = ", ".join(cleaned_parts)
+        print(f"Full Address: {full_address}")  # Print the full address HERE
         return full_address
 
     df_map['full_address'] = df_map.apply(construct_full_address, axis=1)
@@ -52,10 +52,14 @@ try:
     api_key = os.environ.get("GOOGLE_MAPS_API_KEY")
     if api_key is None:
         raise ValueError("GOOGLE_MAPS_API_KEY environment variable not set.")
-    print(f"API Key: {api_key}")  # Print the API key HERE
+    print(f"API Key (first 5 chars): {api_key[:5] if api_key else None}")  # Print the first 5 characters
+
     gmaps = googlemaps.Client(key=api_key)
 
     def geocode_with_google(address):
+        if not address:  # Check if address is empty or None
+            print("Address is empty or None")
+            return None, None
         try:
             geocode_result = gmaps.geocode(address)
             print(f"Geocode Result: {geocode_result}")  # Print the raw result
@@ -67,6 +71,7 @@ try:
                 return None, None
         except Exception as e:
             print(f"Error geocoding {address}: {e}")
+            time.sleep(2)  # Increase the delay to 2 seconds (or more)
             return None, None
 
     df_map['latitude'], df_map['longitude'] = zip(*df_map['full_address'].apply(geocode_with_google))
