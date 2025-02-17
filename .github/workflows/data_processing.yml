@@ -30,7 +30,7 @@ jobs:
         with:
           commit_message: "Automated data processing and geocoding"
           file_pattern: data/bank_locations_geocoded.csv data/bank_locations.csv
-          push_options: '--force-with-lease'  # Or just '' if you don't need --force-with-lease
+          # push_options: '--force-with-lease'  # Remove or comment out this line
 
       - name: List files (for debugging)
         run: ls -l data
