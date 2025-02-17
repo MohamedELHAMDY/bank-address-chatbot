@@ -1,16 +1,27 @@
-async function searchBank() {
-    let bankName = document.getElementById("bankName").value;
-    let locality = document.getElementById("locality").value;
+function getBankAddress() {
+    let query = document.getElementById("userInput").value;
+    let [bank, location] = query.split(" in ");
 
-    let response = await fetch('data/addresses.json');
-    let data = await response.json();
+    if (!bank || !location) {
+        alert("Please enter a valid format: 'Bank Name in Location'");
+        return;
+    }
 
-    let result = data.find(bank => 
-        bank.BANQUE.toLowerCase() === bankName.toLowerCase() && 
-        bank.LOCALITE.toLowerCase() === locality.toLowerCase()
-    );
+    fetch(`/get_address?bank=${bank.trim()}&location=${location.trim()}`)
+    .then(response => response.json())
+    .then(data => {
+        let resultDiv = document.getElementById("chatResponse");
+        resultDiv.innerHTML = ""; // Clear previous results
 
-    document.getElementById("result").innerText = result ? 
-        `🏦 ${result.BANQUE} - ${result.NOM GUICHET} 📍 ${result.ADRESSE GUICHET}` : 
-        "❌ No matching bank found.";
+        if (data.message) {
+            resultDiv.innerHTML = `<p>No results found.</p>`;
+        } else {
+            data.forEach(bank => {
+                resultDiv.innerHTML += `<p><strong>${bank.BANQUE}</strong>: ${bank.ADRESSE_GUICHET}</p>`;
+            });
+        }
+    })
+    .catch(error => {
+        console.error("Error fetching data:", error);
+    });
 }
