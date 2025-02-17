@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3  # Ensure repo is available
+        uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -22,7 +22,7 @@ jobs:
           pip install pandas openpyxl
 
       - name: Debug: List files before processing
-        run: |
+        run: |  # Correct indentation here
           echo "Current Directory: $(pwd)"
           ls -l
           ls -l data/
@@ -30,11 +30,10 @@ jobs:
 
       - name: Run data processing script
         working-directory: ./scripts
-        run: |
-          python create_address_json.py
+        run: python create_address_json.py  # No need for | here for a single command
 
       - name: Debug: Verify JSON output
-        run: |
+        run: |  # Correct indentation here
           ls -l data/
           cat data/addresses.json
 
